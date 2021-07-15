@@ -12,9 +12,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
+import javax.persistence.NoResultException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +36,83 @@ public class SpringDataApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
+        //получение товара по id
+        System.out.println("\n----------------------------------");
+        System.out.println("\nПродукт: " + pr.findById(5L).orElseThrow(() ->
+                new NoResultException("Товар с указанным id не существует!")));
+
+        //получение всех товаров
+        System.out.println("\n----------------------------------");
+        System.out.println("\nСписок всех продуктов: ");
+        System.out.println("\n----------------------------------");
+        pr.findAll().forEach(System.out::println);
+
+        //получение всех товаров с разбивкой по 5 названий на странице
+        System.out.println("\n----------------------------------");
+        int prodPerPage = 5;
+        PageRequest pageRequest = PageRequest.of(0, prodPerPage);
+        Page<Product> products = pr.findAll(pageRequest);
+
+        while (true) {
+            System.out.println("\n----------------------------------");
+            System.out.println(products);
+            products.getContent().forEach(System.out::println);
+            if (products.hasNext()) {
+                products = pr.findAll(products.nextPageable());
+            } else {
+                break;
+            }
+        }
+
+        System.out.println("\n----------------------------------");
+
+        Product product = null;
+
+        //обновление товара по id
+        System.out.println("\n----------------------------------");
+        System.out.println("Обновление товара по id... 2");
+        System.out.println("\n----------------------------------");
+
+        product = pr.findById(2L).orElseThrow(() ->
+                new NoResultException("Товар с указанным id (2) не существует!"));
+        product.setName("New product");
+        product.setPrice(BigDecimal.valueOf(70.99));
+        pr.save(product);
+        System.out.println("\nПродукт: " + pr.findById(2L).orElseThrow(() ->
+                new NoResultException("Товар с указанным id (2) не существует!")));
+        System.out.println("\n----------------------------------");
+
+        //удаление товара по id
+        Long prodId = product.getId();
+        System.out.println("\n----------------------------------");
+        System.out.println("Удаление товара... id = " + prodId);
+        System.out.println("\n----------------------------------");
+        pr.deleteById(prodId);
+        System.out.println("\nПродукт: " + pr.findById(prodId).orElseThrow());
+
+        System.out.println("\n----------------------------------");
+
+        // фильтрация по максимальной цене
+        System.out.println("\n----------------------------------");
+        System.out.println("\nПродукты с ценой до 50: ");
+        System.out.println("\n----------------------------------");
+        pr.findProductByPriceLessThan(BigDecimal.valueOf(50)).forEach(System.out::println);
+
+        System.out.println("\n----------------------------------");
+
+        // фильтрация по минимальной цене
+        System.out.println("\n----------------------------------");
+        System.out.println("\nПродукты с ценой более 150: ");
+        System.out.println("\n----------------------------------");
+        pr.findProductByPriceGreaterThan(BigDecimal.valueOf(150)).forEach(System.out::println);
+
+        // фильтрация по цене в диапазоне min-max
+        System.out.println("\n----------------------------------");
+        System.out.println("\nПродукты в диапазоне цены 50-150: ");
+        System.out.println("\n----------------------------------");
+        pr.findProductByPriceBetween(BigDecimal.valueOf(50), BigDecimal.valueOf(150)).forEach(System.out::println);
+
         log.info("Начало тестового сценария");
         testOfHibernateLinks();
         log.info("\n\n------------------------------\n\n");
