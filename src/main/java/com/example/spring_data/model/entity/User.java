@@ -31,10 +31,4 @@ public class User {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy="user", fetch = FetchType.EAGER)
     private List<Order> orders;
-
-//    private List<Product> products;
-
-//    public List<Product> getProducts() {
-//        return products;
-//    }
 }

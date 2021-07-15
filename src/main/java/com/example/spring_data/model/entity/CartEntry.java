@@ -22,7 +22,7 @@ public class CartEntry {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn (name = "product_id")
     private Product product;
 

@@ -6,19 +6,20 @@ import com.example.spring_data.model.entity.Product;
 import com.example.spring_data.model.entity.User;
 import com.example.spring_data.model.repository.ProductRepository;
 import com.example.spring_data.model.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.persistence.EntityManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @SpringBootApplication
 public class SpringDataApplication implements CommandLineRunner {
 
@@ -26,15 +27,8 @@ public class SpringDataApplication implements CommandLineRunner {
 
     public static void main(String[] args) { SpringApplication.run(SpringDataApplication.class, args); }
 
-    private final EntityManager em;
     private final ProductRepository pr;
     private final UserRepository ur;
-
-    public SpringDataApplication(EntityManager em, ProductRepository pr, UserRepository ur) {
-        this.em = em;
-        this.pr = pr;
-        this.ur = ur;
-    }
 
     @Override
     public void run(String... args) {
@@ -113,7 +107,7 @@ public class SpringDataApplication implements CommandLineRunner {
         System.out.println("Количество заказов: " + user.orElseThrow().getOrders().size());
         System.out.println("Список заказанных товаров с детализацией на момент покупки:");
         for (Order order : user.get().getOrders()) {
-            System.out.println("Заказ: " + order);
+        System.out.println("Заказ: " + order);
             for (CartEntry cartEntry : order.getCartEntries()) {
                 System.out.println("Товар: id = " + cartEntry.getProduct().getId() +
                         ", name = " + cartEntry.getProduct().getName() +

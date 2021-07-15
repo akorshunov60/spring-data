@@ -27,7 +27,7 @@ public class Order {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "order_products",
             joinColumns = @JoinColumn(name = "order_id"),
